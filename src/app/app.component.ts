@@ -1,7 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+//import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 
 @Component({
@@ -22,7 +22,7 @@ requestOptions;
 listaClientes: any;
  async ngOnInit() {
    // tslint:disable-next-line:no-unused-variable
-  let header = this.createHeader();
+  //let header = this.createHeader();
   this.headerDirect = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -44,11 +44,10 @@ listaClientes: any;
   }
 
 
-public createHeader(header?: HttpHeaders): HttpHeaders{
+/*public createHeader(header?: HttpHeaders): HttpHeaders{
   if(!header){
     header = new HttpHeaders();
   }
-
     header = header.append('Content-type', 'application/json');
     header = header.append('accept', 'application/json');
 
@@ -56,10 +55,10 @@ public createHeader(header?: HttpHeaders): HttpHeaders{
     if(token){
       header = header.append('user-token', token);
     }
-    return header;
+    return header;*/
 
 }
 
 
 
-}
+
