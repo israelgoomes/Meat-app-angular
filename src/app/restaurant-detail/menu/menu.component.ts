@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { RestaurantService } from 'app/restaurants/restaurant.service';
 import { Menu } from './menu-model';
 import { Observable } from 'rxjs/Observable';
+import { ShoppingCartservice } from '../shopping-cart/shopping-cart.service';
 
 @Component({
   selector: 'mt-menu',
@@ -12,7 +13,8 @@ import { Observable } from 'rxjs/Observable';
 export class MenuComponent implements OnInit {
   menu: Menu[];
   constructor(private restaurantSrvc: RestaurantService,
-              private route: ActivatedRoute
+              private route: ActivatedRoute,
+              private shoppingCartSrvc:ShoppingCartservice  
     ) { }
 
   ngOnInit() {
@@ -23,6 +25,10 @@ export class MenuComponent implements OnInit {
     })    
   }
   addMenuItem(event){
-    console.log('Evento do menu', event)
+    this.shoppingCartSrvc.addItem(event);
   }
+
+    removeitem(event){
+      this.shoppingCartSrvc
+    }
 }

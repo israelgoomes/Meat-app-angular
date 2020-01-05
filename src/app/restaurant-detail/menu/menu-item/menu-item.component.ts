@@ -1,5 +1,6 @@
 import { Menu } from './../menu-model';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { ShoppingCartservice } from '../../shopping-cart/shopping-cart.service';
 
 @Component({
   selector: 'mt-menu-item',
@@ -16,6 +17,8 @@ export class MenuItemComponent implements OnInit {
 
   ngOnInit() {
   }
+
+
 
   emitAddEvent(){
     this.add.emit(this.menuItem);
