@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ShoppingCartservice } from '../restaurant-detail/shopping-cart/shopping-cart.service';
 import { RadioOption } from '../shared/radio/radio.option.model';
+import { OrderService } from './order.service';
+import { CartItem } from '../restaurant-detail/shopping-cart/cart-item.model';
+import { Order, OrderItem } from './order.model';
 
 @Component({
   selector: 'mt-order',
@@ -8,7 +11,7 @@ import { RadioOption } from '../shared/radio/radio.option.model';
   styleUrls: ['./order.component.css']
 })
 export class OrderComponent implements OnInit {
-
+  delivery: number = 8;
 
   paymentOptions: RadioOption[] = [
     {label: 'Dinheiro', value: 'MON'},
@@ -19,36 +22,41 @@ export class OrderComponent implements OnInit {
 
 
  
-  constructor(private shoppingCartSrvc:ShoppingCartservice) { 
+  constructor(private orderSrvc: OrderService) { 
     console.log(this.paymentOptions)
   }
 
   ngOnInit() {
-    console.log('itens',this.items())
+    //console.log('itens',this.items())
   }
 
-  items(){
-    return this.shoppingCartSrvc.items;
+
+  itemsValue(): number{
+    return this.orderSrvc.itemsValue();
   }
 
-  addItem(param){
-    console.log(param)
-    this.shoppingCartSrvc.addItem(param.menuItem);
+  cartItems(){
+    return this.orderSrvc.cartItems();
   }
 
-  removeItem(param){
-    console.log('item removido',param.menuItem)
-    this.shoppingCartSrvc.removeItem(param.menuItem);
+  increaseQty(item: CartItem){
+     this.orderSrvc.increaseQty(item)
   }
-  removeOneItem(param){
-    // if(param.quantity == 1){
-    //   this.removeItem(param.menuItem)
-    // }else{
-    this.shoppingCartSrvc.removeOneItem(param.menuItem);
-    //}
+  decreaseQty(item: CartItem){
+     this.orderSrvc.decreaseQty(item)
   }
 
-  total(){
-    return this.shoppingCartSrvc.total()
+  remove(item: CartItem){
+    this.orderSrvc.remove(item);
+  }
+
+  checkOrder(order: Order){
+    order.orderItem =  this.cartItems().map((item:CartItem) => 
+    new OrderItem(item.quantity, item.menuItem.id));
+    this.orderSrvc.checkOrder(order).subscribe((orderId: string)=>{
+      console.log(`compra concluida ${orderId}`)
+      this.orderSrvc.clear()
+    });
+    console.log(order)
   }
 }
