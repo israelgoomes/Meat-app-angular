@@ -41,7 +41,9 @@ export class OrderService{
          const header = new Headers();
          header.append('Content-type', 'application/json');
          return this.http.post(`${MEAT_API}/orders`, JSON.stringify(order), new RequestOptions({headers: header}))
-         .map(response => response.json());
+         .map(response => response.json())
+         .map(order => order.id)
+         //caso quisesse retornar um Observable string, poderia substituir o order que recebemos pelo seu id
           
     }
 }
