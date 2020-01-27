@@ -13,7 +13,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
 import { ROUTES } from './app.routes';
 //import { HttpClient, HttpHandler, HttpClientModule } from '@angular/common/http';
 import { RestaurantsComponent } from './restaurants/restaurants.component';
@@ -24,11 +23,10 @@ import { ShoppingCartComponent } from './restaurant-detail/shopping-cart/shoppin
 import { MenuItemComponent } from './restaurant-detail/menu/menu-item/menu-item.component';
 import { ReviwesComponent } from './restaurant-detail/reviwes/reviwes.component';
 import { ShoppingCartservice } from './restaurant-detail/shopping-cart/shopping-cart.service';
-import { OrderComponent } from './order/order.component';
-import { FormsModule } from '@angular/forms';
 import { TesteComponent } from './teste/teste.component';
-import { InputComponent } from '../../src/app/shared/input/input.component';
-import { RadioComponent } from './shared/radio/radio.component';
+import { OrderService } from './order/order.service';
+import { OrderSumaryComponent } from './order-sumary/order-sumary.component';
+import { SharedModule } from './shared/shared.module';
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -38,7 +36,6 @@ var AppModule = /** @class */ (function () {
                 AppComponent,
                 HeaderComponent,
                 HomeComponent,
-                AboutComponent,
                 RestaurantsComponent,
                 RestaurantComponent,
                 RestaurantDetailComponent,
@@ -46,21 +43,22 @@ var AppModule = /** @class */ (function () {
                 ShoppingCartComponent,
                 MenuItemComponent,
                 ReviwesComponent,
-                OrderComponent,
                 TesteComponent,
-                InputComponent,
-                RadioComponent,
+                OrderSumaryComponent,
             ],
             imports: [
                 BrowserModule,
                 HttpModule,
-                FormsModule,
+                // FormsModule,
+                //ReactiveFormsModule,
+                SharedModule,
                 //HttpClientModule,
                 RouterModule.forRoot(ROUTES),
             ],
             providers: [
                 ShoppingCartservice,
                 RestaurantService,
+                OrderService,
                 { provide: LOCALE_ID, useValue: 'pt-BR' }
             ],
             bootstrap: [AppComponent]

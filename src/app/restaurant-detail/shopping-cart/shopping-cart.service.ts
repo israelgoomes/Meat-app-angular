@@ -14,7 +14,7 @@ export class ShoppingCartservice{
         let foundItem = this.items.find(mItem => mItem.menuItem.id == item.id);
         //se sim, adicionamos mais um na sua quantidade
         if(foundItem){
-           foundItem.quantity ++; 
+           this.increaseQty(foundItem)
          //se não, adicionamos o item ao array;   
         }else{
             this.items.push(new CartItem(item))
@@ -32,6 +32,17 @@ export class ShoppingCartservice{
             foundItem.quantity --; 
             //se não, adicionamos o item ao array;   
          }
+    }
+
+    increaseQty(item: CartItem){
+        item.quantity = item.quantity + 1;
+    }
+
+    decreaseQty(item){
+        item.quantity = item.quantity -1;
+        if(item.quantity == 0){
+            this.removeItem(item);
+        }
     }
 
     total(): number{

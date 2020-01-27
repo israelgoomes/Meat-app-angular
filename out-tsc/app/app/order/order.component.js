@@ -8,10 +8,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Component } from '@angular/core';
-import { ShoppingCartservice } from '../restaurant-detail/shopping-cart/shopping-cart.service';
+import { OrderService } from './order.service';
+import { OrderItem } from './order.model';
+import { Router } from '@angular/router';
+import { FormBuilder, Validators } from '@angular/forms';
 var OrderComponent = /** @class */ (function () {
-    function OrderComponent(shoppingCartSrvc) {
-        this.shoppingCartSrvc = shoppingCartSrvc;
+    function OrderComponent(orderSrvc, route, fb) {
+        this.orderSrvc = orderSrvc;
+        this.route = route;
+        this.fb = fb;
+        this.delivery = 8;
+        this.emailPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        this.numberParttern = /^[0-9]*$/;
         this.paymentOptions = [
             { label: 'Dinheiro', value: 'MON' },
             { label: 'Cartão de Débito', value: 'DEB' },
@@ -20,37 +28,63 @@ var OrderComponent = /** @class */ (function () {
         ];
         console.log(this.paymentOptions);
     }
+    OrderComponent_1 = OrderComponent;
     OrderComponent.prototype.ngOnInit = function () {
-        console.log('itens', this.items());
+        this.orderForm = this.fb.group({
+            name: this.fb.control('', [Validators.required, Validators.minLength(5)]),
+            email: this.fb.control('', [Validators.required, Validators.pattern(this.emailPattern)]),
+            emailConfirmation: this.fb.control('', [Validators.required, Validators.pattern(this.emailPattern)]),
+            address: this.fb.control('', [Validators.required, Validators.minLength(5)]),
+            number: this.fb.control('', [Validators.required, Validators.pattern(this.numberParttern)]),
+            optionalAddress: this.fb.control(''),
+            paymentOption: this.fb.control('', [Validators.required])
+        }, { validator: OrderComponent_1.equalsTo });
     };
-    OrderComponent.prototype.items = function () {
-        return this.shoppingCartSrvc.items;
+    OrderComponent.equalsTo = function (group) {
+        var email = group.get('email');
+        var emailConfirmation = group.get('emailConfirmation');
+        if (!email || !emailConfirmation) {
+            return undefined;
+        }
+        if (email.value !== emailConfirmation.value) {
+            return { emailsNotMatch: true };
+        }
+        return undefined;
     };
-    OrderComponent.prototype.addItem = function (param) {
-        console.log(param);
-        this.shoppingCartSrvc.addItem(param.menuItem);
+    OrderComponent.prototype.itemsValue = function () {
+        return this.orderSrvc.itemsValue();
     };
-    OrderComponent.prototype.removeItem = function (param) {
-        console.log('item removido', param.menuItem);
-        this.shoppingCartSrvc.removeItem(param.menuItem);
+    OrderComponent.prototype.cartItems = function () {
+        return this.orderSrvc.cartItems();
     };
-    OrderComponent.prototype.removeOneItem = function (param) {
-        // if(param.quantity == 1){
-        //   this.removeItem(param.menuItem)
-        // }else{
-        this.shoppingCartSrvc.removeOneItem(param.menuItem);
-        //}
+    OrderComponent.prototype.increaseQty = function (item) {
+        this.orderSrvc.increaseQty(item);
     };
-    OrderComponent.prototype.total = function () {
-        return this.shoppingCartSrvc.total();
+    OrderComponent.prototype.decreaseQty = function (item) {
+        this.orderSrvc.decreaseQty(item);
     };
-    OrderComponent = __decorate([
+    OrderComponent.prototype.remove = function (item) {
+        this.orderSrvc.remove(item);
+    };
+    OrderComponent.prototype.checkOrder = function (order) {
+        var _this = this;
+        order.orderItem = this.cartItems().map(function (item) {
+            return new OrderItem(item.quantity, item.menuItem.id);
+        });
+        this.orderSrvc.checkOrder(order).subscribe(function (orderId) {
+            _this.route.navigate(['/order-sumary']);
+            console.log("compra concluida " + orderId);
+            _this.orderSrvc.clear();
+        });
+    };
+    var OrderComponent_1;
+    OrderComponent = OrderComponent_1 = __decorate([
         Component({
             selector: 'mt-order',
             templateUrl: './order.component.html',
             styleUrls: ['./order.component.css']
         }),
-        __metadata("design:paramtypes", [ShoppingCartservice])
+        __metadata("design:paramtypes", [OrderService, Router, FormBuilder])
     ], OrderComponent);
     return OrderComponent;
 }());

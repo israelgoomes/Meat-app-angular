@@ -11,7 +11,7 @@ var ShoppingCartservice = /** @class */ (function () {
         var foundItem = this.items.find(function (mItem) { return mItem.menuItem.id == item.id; });
         //se sim, adicionamos mais um na sua quantidade
         if (foundItem) {
-            foundItem.quantity++;
+            this.increaseQty(foundItem);
             //se não, adicionamos o item ao array;   
         }
         else {
@@ -27,6 +27,15 @@ var ShoppingCartservice = /** @class */ (function () {
         if (foundItem) {
             foundItem.quantity--;
             //se não, adicionamos o item ao array;   
+        }
+    };
+    ShoppingCartservice.prototype.increaseQty = function (item) {
+        item.quantity = item.quantity + 1;
+    };
+    ShoppingCartservice.prototype.decreaseQty = function (item) {
+        item.quantity = item.quantity - 1;
+        if (item.quantity == 0) {
+            this.removeItem(item);
         }
     };
     ShoppingCartservice.prototype.total = function () {

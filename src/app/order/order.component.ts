@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ShoppingCartservice } from '../restaurant-detail/shopping-cart/shopping-cart.service';
 import { RadioOption } from '../shared/radio/radio.option.model';
+import { OrderService } from './order.service';
+import { CartItem } from '../restaurant-detail/shopping-cart/cart-item.model';
+import { Order, OrderItem } from './order.model';
+import { Router } from '@angular/router';
+import {FormBuilder, FormGroup, Validators, AbstractControl} from '@angular/forms';
 
 @Component({
   selector: 'mt-order',
@@ -8,7 +12,11 @@ import { RadioOption } from '../shared/radio/radio.option.model';
   styleUrls: ['./order.component.css']
 })
 export class OrderComponent implements OnInit {
+  orderForm: FormGroup;
+  delivery: number = 8;
 
+  emailPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+  numberParttern = /^[0-9]*$/;
 
   paymentOptions: RadioOption[] = [
     {label: 'Dinheiro', value: 'MON'},
@@ -19,36 +27,61 @@ export class OrderComponent implements OnInit {
 
 
  
-  constructor(private shoppingCartSrvc:ShoppingCartservice) { 
+  constructor(private orderSrvc: OrderService, private route: Router, private fb: FormBuilder) { 
     console.log(this.paymentOptions)
   }
 
   ngOnInit() {
-    console.log('itens',this.items())
+    this.orderForm = this.fb.group({
+      name: this.fb.control('', [Validators.required, Validators.minLength(5)]),
+      email: this.fb.control('', [Validators.required, Validators.pattern(this.emailPattern)]),
+      emailConfirmation: this.fb.control('', [Validators.required, Validators.pattern(this.emailPattern)]),
+      address: this.fb.control('', [Validators.required, Validators.minLength(5)]),
+      number: this.fb.control('', [Validators.required, Validators.pattern(this.numberParttern)]), 
+      optionalAddress: this.fb.control(''),
+      paymentOption: this.fb.control('', [Validators.required])
+    }, {validator: OrderComponent.equalsTo})
   }
 
-  items(){
-    return this.shoppingCartSrvc.items;
+  static equalsTo(group: AbstractControl): {[key:string]: boolean} {
+      const email = group.get('email');
+      const emailConfirmation = group.get('emailConfirmation')
+      if(!email || !emailConfirmation){
+        return undefined
+      }
+
+      if(email.value !== emailConfirmation.value){
+        return {emailsNotMatch:true}
+      }
+      return undefined
   }
 
-  addItem(param){
-    console.log(param)
-    this.shoppingCartSrvc.addItem(param.menuItem);
+  itemsValue(): number{
+    return this.orderSrvc.itemsValue();
   }
 
-  removeItem(param){
-    console.log('item removido',param.menuItem)
-    this.shoppingCartSrvc.removeItem(param.menuItem);
-  }
-  removeOneItem(param){
-    // if(param.quantity == 1){
-    //   this.removeItem(param.menuItem)
-    // }else{
-    this.shoppingCartSrvc.removeOneItem(param.menuItem);
-    //}
+  cartItems(){
+    return this.orderSrvc.cartItems();
   }
 
-  total(){
-    return this.shoppingCartSrvc.total()
+  increaseQty(item: CartItem){
+     this.orderSrvc.increaseQty(item)
+  }
+  decreaseQty(item: CartItem){
+     this.orderSrvc.decreaseQty(item)
+  }
+
+  remove(item: CartItem){
+    this.orderSrvc.remove(item);
+  }
+
+  checkOrder(order: Order){
+    order.orderItem =  this.cartItems().map((item:CartItem) => 
+    new OrderItem(item.quantity, item.menuItem.id));
+    this.orderSrvc.checkOrder(order).subscribe((orderId: string)=>{
+      this.route.navigate(['/order-sumary'])
+      console.log(`compra concluida ${orderId}`)
+      this.orderSrvc.clear()
+    });
   }
 }
