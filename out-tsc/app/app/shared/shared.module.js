@@ -10,15 +10,33 @@ import { InputComponent } from './input/input.component';
 import { RadioComponent } from './radio/radio.component';
 import { RatingComponent } from './rating/rating.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ShoppingCartservice } from '../restaurant-detail/shopping-cart/shopping-cart.service';
+import { RestaurantService } from '../restaurants/restaurant.service';
+import { OrderService } from '../order/order.service';
+import { SnackbarComponent } from './messages/snackbar/snackbar.component';
+import { NotificationService } from './messages/notification.service';
 var SharedModule = /** @class */ (function () {
     function SharedModule() {
     }
-    SharedModule = __decorate([
+    SharedModule_1 = SharedModule;
+    SharedModule.forRoot = function () {
+        return {
+            ngModule: SharedModule_1,
+            providers: [
+                ShoppingCartservice,
+                RestaurantService,
+                OrderService,
+                NotificationService
+            ]
+        };
+    };
+    var SharedModule_1;
+    SharedModule = SharedModule_1 = __decorate([
         NgModule({
-            declarations: [InputComponent, RadioComponent, RatingComponent],
+            declarations: [InputComponent, RadioComponent, RatingComponent, SnackbarComponent],
             imports: [CommonModule, FormsModule, ReactiveFormsModule],
             exports: [InputComponent, RadioComponent, RatingComponent,
-                CommonModule, FormsModule, ReactiveFormsModule]
+                CommonModule, FormsModule, ReactiveFormsModule, SnackbarComponent]
         })
     ], SharedModule);
     return SharedModule;

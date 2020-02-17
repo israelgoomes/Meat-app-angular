@@ -9,7 +9,7 @@
 <section class="content">
 
   <div class="row">
-          <div class="col-sm-6 col-xs-12" *ngFor="let restaurant of restaurants | orderBy:'name'">
+          <div class="col-sm-6 col-xs-12" *ngFor="let restaurant of restaurants">
               <mt-restaurant [restaurant]="restaurant"></mt-restaurant>
             <!-- /.info-box -->
           </div>
